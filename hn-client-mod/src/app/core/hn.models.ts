@@ -1,14 +1,27 @@
+//Type definitions for Hacker News API responses
+
 export type FeedKind = 'top' | 'new';
 
 export type HnItemType = 'story' | 'comment' | 'job' | 'poll' | 'pollopt';
 
 export interface HnItem {
+    //Required fields
   id: number;
-  by?: string;         //author 
-  time?: number;        //Timestamp (in sec)
+  by?: string;         
+  time?: number;        
   title?: string;
   url?: string;
   score?: number;
-  descendants?: number;  //number of comments
-  type?: HnItemType;    //story, job, etc..
+  descendants?: number; 
+  type?: HnItemType;    
+
+
+  //Optional fields
+  deleted?: boolean;
+  dead?: boolean;
+  text?: string;              
+  parent?: number;            
+  poll?: number;              
+  kids?: number[];            
+  parts?: number[]; 
 }
