@@ -1,7 +1,17 @@
 // Service for managing Hacker News feed state, pagination, and cached items.
 
 import { Injectable } from '@angular/core';
-import { catchError, filter, finalize, firstValueFrom, from, mergeMap, of, tap } from 'rxjs';
+import {
+  catchError,
+  finalize,
+  firstValueFrom,
+  from,
+  lastValueFrom,
+  mergeMap,
+  of,
+  tap,
+  toArray,
+} from 'rxjs';
 import { HnApiService } from '../../core/hn-api.service';
 import { FeedKind, HnItem } from '../../core/hn.models';
 
@@ -11,10 +21,9 @@ const CONCURRENCY = 10;
 type FeedState = 'idle' | 'loading' | 'ready' | 'error';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HnFeedService {
-
   private ids: number[] = [];
   private cursor = 0;
   private cache = new Map<number, HnItem>();
@@ -22,11 +31,11 @@ export class HnFeedService {
   state: FeedState = 'idle';
   errorMsg: string | null = null;
 
-  constructor(private HnApiService: HnApiService) { }
+  constructor(private HnApiService: HnApiService) {}
 
   //Getting the items from the MAP and filter these by "story" HnItemType
   items(): HnItem[] {
-    return Array.from(this.cache.values()).filter(i => i?.type === 'story');
+    return Array.from(this.cache.values()).filter((i) => i?.type === 'story');
   }
 
   async init(kind: FeedKind): Promise<void> {
@@ -34,7 +43,9 @@ export class HnFeedService {
     try {
       this.state = 'loading';
       this.ids = await firstValueFrom(
-        kind === 'top' ? this.HnApiService.getTopIds() : this.HnApiService.getNewIds()
+        kind === 'top'
+          ? this.HnApiService.getTopIds()
+          : this.HnApiService.getNewIds()
       );
       await this.loadNextPage();
       this.state = 'ready';
@@ -44,41 +55,39 @@ export class HnFeedService {
     }
   }
 
-   async loadNextPage(): Promise<void> {
-  if (this.state === 'loading') return;
+  async loadNextPage(): Promise<void> {
+    if (this.state === 'loading') return;
 
-  const start = this.cursor;
-  const end = Math.min(start + PAGE_SIZE, this.ids.length);
-  if (start >= end) return;
+    const start = this.cursor;
+    const end = Math.min(start + PAGE_SIZE, this.ids.length);
+    if (start >= end) return;
 
-  this.state = 'loading';
+    this.state = 'loading';
 
-  const slice = this.ids.slice(start, end);
+    const slice = this.ids.slice(start, end);
 
-  await firstValueFrom(
-    from(slice).pipe(
-      //Getting the items with concurrency limit
-      mergeMap(
-        (id) =>
-          this.HnApiService.getItem(id).pipe(
-            catchError(() => of(null))
-          ),
-        CONCURRENCY
-      ),
-      //Loading the cache
-      tap((it) => {
-        if (it && it.id != null && !this.cache.has(it.id)) {
-          this.cache.set(it.id, it);
-        }
-      }),
-      filter(() => false),
-      finalize(() => {
-        this.cursor = end;
-        this.state = 'ready';
-      })
-    )
-  );
-}
+    await lastValueFrom(
+       // For each id, fetch the item with concurrency limit
+      from(slice).pipe(
+        mergeMap(
+          (id) =>
+            this.HnApiService.getItem(id).pipe(catchError(() => of(null))),
+          CONCURRENCY
+        ),
+        //Loading the cache
+        tap((it) => {
+          if (it && it.id != null && !this.cache.has(it.id)) {
+            this.cache.set(it.id, it);
+          }
+        }),
+        toArray(), 
+        finalize(() => {
+          this.cursor = end;
+          this.state = 'ready';
+        })
+      )
+    );
+  }
 
   retry(kind: FeedKind) {
     return this.init(kind);
@@ -91,5 +100,4 @@ export class HnFeedService {
     this.state = 'idle';
     this.errorMsg = null;
   }
-
 }
