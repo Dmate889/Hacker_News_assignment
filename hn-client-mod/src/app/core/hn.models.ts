@@ -4,6 +4,7 @@ export type FeedKind = 'top' | 'new';
 
 export type HnItemType = 'story' | 'comment' | 'job' | 'poll' | 'pollopt';
 
+//Interface for the types used for the API values
 export interface HnItem {
     //Required fields
   id: number;

@@ -22,7 +22,7 @@ export class HnApiService {
       .pipe(shareReplay(1));
   }
 
-  getNewIds(): Observable<number[]> {
+  getNewIds(): Observable<number[]> { 
     return this.http
       .get<number[]>(`${BASE}/newstories.json`)
       .pipe(shareReplay(1));
