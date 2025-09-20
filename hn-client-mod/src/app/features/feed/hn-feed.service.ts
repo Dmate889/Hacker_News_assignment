@@ -41,7 +41,6 @@ export class HnFeedService {
   async init(kind: FeedKind): Promise<void> {
     this.reset();
     try {
-      this.state = 'loading';
       this.ids = await firstValueFrom(
         kind === 'top'
           ? this.HnApiService.getTopIds()
@@ -67,7 +66,7 @@ export class HnFeedService {
     const slice = this.ids.slice(start, end);
 
     await lastValueFrom(
-       // For each id, fetch the item with concurrency limit
+       //For each id, fetch the item with concurrency limit
       from(slice).pipe(
         mergeMap(
           (id) =>
@@ -99,5 +98,9 @@ export class HnFeedService {
     this.cache.clear();
     this.state = 'idle';
     this.errorMsg = null;
+  }
+
+  get hasMore(): boolean{
+    return this.cursor < this.ids.length
   }
 }
