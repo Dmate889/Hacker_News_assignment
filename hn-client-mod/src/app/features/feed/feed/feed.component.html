@@ -1,27 +1,25 @@
 <section class="feed">
   <h2>{{ kind | titlecase }} feed</h2>
 
-  <!-- Loading state -->
   <div *ngIf="feed.state === 'loading'">Loading...</div>
-
-  <!-- Error state -->
   <div *ngIf="feed.state === 'error'">
-    Failed to load feed.
+    {{ feed.errorMsg }}
     <button (click)="retry()">Retry</button>
   </div>
 
-  <!-- List -->
   <ul *ngIf="feed.state === 'ready'">
     <li *ngFor="let item of feed.items()">
-      <a [href]="item.url" target="_blank" rel="noopener">
-        {{ item.title }}
-      </a>
+      <a [href]="item.url" target="_blank">{{ item.title }}</a>
       <small>by {{ item.by }} | {{ item.score }} points</small>
     </li>
   </ul>
 
-  <!-- Loadmore button -->
-  <button *ngIf="feed.state === 'ready'" (click)="loadMore()">
-    Load more
-  </button>
+  <div class="controls">
+    <button (click)="loadPrev()" [disabled]="!feed.hasPrev || feed.state==='loading'">
+      Prev
+    </button>
+    <button (click)="loadNext()" [disabled]="!feed.hasNext || feed.state==='loading'">
+      Next
+    </button>
+  </div>
 </section>

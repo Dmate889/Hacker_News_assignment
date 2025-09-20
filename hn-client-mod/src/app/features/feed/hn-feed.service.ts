@@ -1,17 +1,8 @@
-// Service for managing Hacker News feed state, pagination, and cached items.
+// Service for managing Hacker News feed state, page-based pagination (20 items), and cached items, prev + next mechanism
 
 import { Injectable } from '@angular/core';
-import {
-  catchError,
-  finalize,
-  firstValueFrom,
-  from,
-  lastValueFrom,
-  mergeMap,
-  of,
-  tap,
-  toArray,
-} from 'rxjs';
+import { firstValueFrom, from, of, lastValueFrom } from 'rxjs';
+import { catchError, mergeMap, tap, toArray, finalize } from 'rxjs/operators';
 import { HnApiService } from '../../core/hn-api.service';
 import { FeedKind, HnItem } from '../../core/hn.models';
 
@@ -20,87 +11,107 @@ const CONCURRENCY = 10;
 
 type FeedState = 'idle' | 'loading' | 'ready' | 'error';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class HnFeedService {
-  private ids: number[] = [];
-  private cursor = 0;
-  private cache = new Map<number, HnItem>();
+  private ids: number[] = [];                   
+  private cache = new Map<number, HnItem>();    
+  private pageIndex = 0;                        
 
   state: FeedState = 'idle';
-  errorMsg: string | null = null;
+  errorMsg = '';
+  kind: FeedKind = 'top';
 
   constructor(private HnApiService: HnApiService) {}
 
-  //Getting the items from the MAP and filter these by "story" HnItemType
+  // Story items - max 20
   items(): HnItem[] {
-    return Array.from(this.cache.values()).filter((i) => i?.type === 'story');
+    const start = this.pageIndex * PAGE_SIZE;
+    const end = start + PAGE_SIZE;
+    return this.ids
+      .slice(start, end)
+      .map(id => this.cache.get(id))
+      .filter((i): i is HnItem => !!i && i.type === 'story');
   }
 
   async init(kind: FeedKind): Promise<void> {
-    this.reset();
+    this.kind = kind;
+    this.pageIndex = 0;
+    this.cache.clear();
+    this.state = 'idle';
+    this.errorMsg = '';
+
     try {
       this.ids = await firstValueFrom(
-        kind === 'top'
-          ? this.HnApiService.getTopIds()
-          : this.HnApiService.getNewIds()
+        kind === 'top' ? this.HnApiService.getTopIds() : this.HnApiService.getNewIds()
       );
-      await this.loadNextPage();
-      this.state = 'ready';
+      if (this.ids.length > 0) {
+        await this.loadPage(0); 
+      } else {
+        this.state = 'ready';
+      }
     } catch {
       this.state = 'error';
       this.errorMsg = 'Failed to load feed.';
     }
   }
 
-  async loadNextPage(): Promise<void> {
+  //Loading pages + cache
+  async loadPage(index: number): Promise<void> {
     if (this.state === 'loading') return;
 
-    const start = this.cursor;
+    const start = index * PAGE_SIZE;
     const end = Math.min(start + PAGE_SIZE, this.ids.length);
     if (start >= end) return;
 
     this.state = 'loading';
-
     const slice = this.ids.slice(start, end);
 
     await lastValueFrom(
-       //For each id, fetch the item with concurrency limit
+      //Checks if ID is in cache, if not - API call
       from(slice).pipe(
         mergeMap(
           (id) =>
-            this.HnApiService.getItem(id).pipe(catchError(() => of(null))),
+            this.cache.has(id)
+              ? of(this.cache.get(id)!)
+              : this.HnApiService.getItem(id).pipe(catchError(() => of(null))),
           CONCURRENCY
         ),
-        //Loading the cache
+        // Store IDs in cache - no duplicates
         tap((it) => {
           if (it && it.id != null && !this.cache.has(it.id)) {
             this.cache.set(it.id, it);
           }
         }),
-        toArray(), 
+        //toArray() so we will get the input in one single array
+        toArray(),
+        // Finalize state management
         finalize(() => {
-          this.cursor = end;
+          this.pageIndex = index;
           this.state = 'ready';
         })
       )
     );
   }
 
-  retry(kind: FeedKind) {
-    return this.init(kind);
+  //Go to next page if available
+  async nextPage(): Promise<void> {
+    if ((this.pageIndex + 1) * PAGE_SIZE < this.ids.length) {
+      await this.loadPage(this.pageIndex + 1);
+    }
   }
 
-  private reset() {
-    this.ids = [];
-    this.cursor = 0;
-    this.cache.clear();
-    this.state = 'idle';
-    this.errorMsg = null;
+  //Go to previous page if available
+  async prevPage(): Promise<void> {
+    if (this.pageIndex > 0) {
+      await this.loadPage(this.pageIndex - 1);
+    }
   }
 
-  get hasMore(): boolean{
-    return this.cursor < this.ids.length
+  //Button guards - buttons will appear only when they supposed to
+  get hasNext(): boolean {
+    return (this.pageIndex + 1) * PAGE_SIZE < this.ids.length;
+  }
+  get hasPrev(): boolean {
+    return this.pageIndex > 0;
   }
 }
