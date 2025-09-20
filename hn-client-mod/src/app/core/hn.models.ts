@@ -1,8 +1,8 @@
 //Type definitions for Hacker News API responses
 
-export type FeedKind = 'top' | 'new';
+export type FeedKind = 'top' | 'new' | 'best' | 'ask' | 'show' | 'jobs';
 
-export type HnItemType = 'story' | 'comment' | 'job' | 'poll' | 'pollopt';
+export type HnItemType = 'story' | 'comment' | 'poll' | 'pollopt';
 
 //Interface for the types used for the API values
 export interface HnItem {

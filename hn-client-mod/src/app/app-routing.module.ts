@@ -4,8 +4,12 @@ import { FeedComponent } from './features/feed/feed/feed.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'top' },
-  { path: 'top', component: FeedComponent, data: { feed: 'top' } },
-  { path: 'new', component: FeedComponent, data: { feed: 'new' } },
+  { path: 'top',  component: FeedComponent, data: { feed: 'top'  } },
+  { path: 'new',  component: FeedComponent, data: { feed: 'new'  } },
+  { path: 'best', component: FeedComponent, data: { feed: 'best' } },
+  { path: 'ask',  component: FeedComponent, data: { feed: 'ask'  } },
+  { path: 'show', component: FeedComponent, data: { feed: 'show' } },
+  { path: 'jobs', component: FeedComponent, data: { feed: 'jobs' } },
   { path: '**', redirectTo: 'top' },
 ];
 

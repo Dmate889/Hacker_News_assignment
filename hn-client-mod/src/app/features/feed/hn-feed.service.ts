@@ -1,10 +1,10 @@
 // Service for managing Hacker News feed state, page-based pagination (20 items), and cached items, prev + next mechanism
 
 import { Injectable } from '@angular/core';
-import { firstValueFrom, from, of, lastValueFrom } from 'rxjs';
+import { firstValueFrom, from, of, lastValueFrom, Observable } from 'rxjs';
 import { catchError, mergeMap, tap, toArray, finalize } from 'rxjs/operators';
-import { HnApiService } from '../../core/hn-api.service';
-import { FeedKind, HnItem } from '../../core/hn.models';
+import { HnApiService } from '@core/hn-api.service';
+import { FeedKind, HnItem } from '@core/hn.models';
 
 const PAGE_SIZE = 20;
 const CONCURRENCY = 10;
@@ -13,9 +13,9 @@ type FeedState = 'idle' | 'loading' | 'ready' | 'error';
 
 @Injectable({ providedIn: 'root' })
 export class HnFeedService {
-  private ids: number[] = [];                   
-  private cache = new Map<number, HnItem>();    
-  private pageIndex = 0;                        
+  private ids: number[] = [];
+  private cache = new Map<number, HnItem>();
+  private pageIndex = 0;
 
   state: FeedState = 'idle';
   errorMsg = '';
@@ -29,31 +29,48 @@ export class HnFeedService {
     const end = start + PAGE_SIZE;
     return this.ids
       .slice(start, end)
-      .map(id => this.cache.get(id))
+      .map((id) => this.cache.get(id))
       .filter((i): i is HnItem => !!i && i.type === 'story');
   }
 
   async init(kind: FeedKind): Promise<void> {
-    this.kind = kind;
-    this.pageIndex = 0;
-    this.cache.clear();
-    this.state = 'idle';
-    this.errorMsg = '';
+  this.reset();
+  this.kind = this.kind;
+  try {
+    let ids$: Observable<number[]>;
 
-    try {
-      this.ids = await firstValueFrom(
-        kind === 'top' ? this.HnApiService.getTopIds() : this.HnApiService.getNewIds()
-      );
-      if (this.ids.length > 0) {
-        await this.loadPage(0); 
-      } else {
-        this.state = 'ready';
-      }
-    } catch {
-      this.state = 'error';
-      this.errorMsg = 'Failed to load feed.';
+    switch (kind) {
+      case 'top':
+        ids$ = this.HnApiService.getTopIds();
+        break;
+      case 'new':
+        ids$ = this.HnApiService.getNewIds();
+        break;
+      case 'best':
+        ids$ = this.HnApiService.getBestIds();
+        break;
+      case 'ask':
+        ids$ = this.HnApiService.getAskIds();
+        break;
+      case 'show':
+        ids$ = this.HnApiService.getShowIds();
+        break;
+      default:
+        throw new Error(`Unsupported feed kind: ${kind}`);
     }
+
+    this.ids = await firstValueFrom(ids$);
+
+    if (this.ids.length > 0) {
+      await this.loadPage(0);
+    } else {
+      this.state = 'ready';
+    }
+  } catch {
+    this.state = 'error';
+    this.errorMsg = 'Failed to load feed.';
   }
+}
 
   //Loading pages + cache
   async loadPage(index: number): Promise<void> {
@@ -113,5 +130,12 @@ export class HnFeedService {
   }
   get hasPrev(): boolean {
     return this.pageIndex > 0;
+  }
+
+  reset() {
+    this.pageIndex = 0;
+    this.cache.clear();
+    this.state = 'idle';
+    this.errorMsg = '';
   }
 }
