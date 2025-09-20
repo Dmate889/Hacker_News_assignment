@@ -1,0 +1,12 @@
+<article class="post">
+  <h3 class="title">
+    <a [href]="itemLink(item)" target="_blank" rel="noopener">
+      {{ item.title }}
+    </a>
+  </h3>
+  <p class="meta">
+    by {{ item.by || 'unknown' }}
+    • {{ item.score ?? 0 }} points
+    • {{ item.descendants ?? 0 }} comments
+  </p>
+</article>

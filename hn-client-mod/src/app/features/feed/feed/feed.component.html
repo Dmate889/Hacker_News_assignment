@@ -8,11 +8,10 @@
   </div>
 
   <ul *ngIf="feed.state === 'ready'">
-    <li *ngFor="let item of feed.items()">
-      <a [href]="item.url" target="_blank">{{ item.title }}</a>
-      <small>by {{ item.by }} | {{ item.score }} points</small>
-    </li>
-  </ul>
+  <li *ngFor="let item of feed.items(); trackBy: trackById">
+    <app-post-card [item]="item"></app-post-card>
+  </li>
+</ul>
 
   <div class="controls">
     <button (click)="loadPrev()" [disabled]="!feed.hasPrev || feed.state==='loading'">

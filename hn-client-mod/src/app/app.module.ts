@@ -5,12 +5,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FeedComponent } from './features/feed/feed/feed.component';
 import { TopBarComponent } from './shared/top-bar/top-bar.component';
+import { PostCardComponent } from './features/feed/post-card/post-card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FeedComponent,
     TopBarComponent,
+    PostCardComponent,
   ],
   imports: [
     BrowserModule,
