@@ -5,6 +5,7 @@ import {
   HttpTestingController,
 } from '@angular/common/http/testing';
 import { HnApiService } from './hn-api.service';
+import { HnItem, HnUser } from './hn.models';
 
 const BASE = 'https://hacker-news.firebaseio.com/v0';
 
@@ -115,7 +116,7 @@ describe('HnApiService', () => {
       url: 'https://example.com',
     };
 
-    let got: typeof mockItem | undefined;
+    let got: HnItem | undefined
 
     service.getItem(42).subscribe((item) => (got = item));
 
@@ -131,13 +132,13 @@ describe('HnApiService', () => {
   // getUser 
 
   it('should fetch a user by username', () => {
-  const mockUser = {
+  const mockUser: HnUser = {
     id: 'alice',
     created: 1700000000,
     karma: 777
   };
 
-  let got: typeof mockUser | undefined;
+  let got: HnUser | undefined
 
   service.getUser('alice').subscribe(user => (got = user));
 

@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { HnItem, HnUser } from './hn.models';
+import { HnItem, HnUser } from '../core/hn.models';
 import { share, shareReplay } from 'rxjs/operators';
 
 const BASE = 'https://hacker-news.firebaseio.com/v0';
