@@ -13,11 +13,11 @@ export class UserDetailComponent implements OnInit {
   loading = true;
   error = '';
 
-  constructor(private route: ActivatedRoute, private api: HnApiService) {}
+  constructor(private route: ActivatedRoute, private HnApiService: HnApiService) {}
 
   ngOnInit(): void {
     const username = this.route.snapshot.paramMap.get('id')!;
-    this.api.getUsers(username).subscribe({
+    this.HnApiService.getUsers(username).subscribe({
       next: u => {
         this.user = u;
         this.loading = false;
