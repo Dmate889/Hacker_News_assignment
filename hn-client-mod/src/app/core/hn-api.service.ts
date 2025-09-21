@@ -49,7 +49,7 @@ export class HnApiService {
     .pipe(shareReplay(1))
   }
 
-  getUsers(username: string): Observable<HnUser>{
+  getUser(username: string): Observable<HnUser>{
      return this.http.get<HnUser>(`${BASE}/user/${username}.json`);
   }
 
