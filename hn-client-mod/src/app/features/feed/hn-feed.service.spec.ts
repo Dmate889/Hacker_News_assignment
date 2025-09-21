@@ -54,4 +54,35 @@ describe('HnFeedService (init – simple test)', () => {
     expect(service.hasPrev).toBeFalse();  
     expect(service.hasNext).toBeFalse();  
   });
+
+
+  function mkItem(id: number, patch: Partial<HnItem> = {}): HnItem {
+    return {
+      id,
+      type: 'story',
+      by: 'tester',
+      time: 123,
+      title: `Item ${id}`,
+      url: `https://example.com/${id}`,
+      ...patch,
+    };
+  }
+
+  it('next() should move to page 2 and set flags', async () => {
+    const ids = Array.from({ length: 35 }, (_, i) => i + 1);
+    api.getTopIds.and.returnValue(of(ids));
+    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+
+    await service.init('top');  
+    await service.nextPage();   
+
+    const items = service.items();
+    expect(items.length).toBe(15); 
+    expect(items[0].id).toBe(21);
+    expect(items.at(-1)?.id).toBe(35);
+
+    expect(service.hasPrev).toBeTrue();
+    expect(service.hasNext).toBeFalse();
+    expect(service.state).toBe('ready');
+  });
 });
