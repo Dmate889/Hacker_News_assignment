@@ -6,7 +6,7 @@ export type HnItemType = 'story' | 'comment' | 'poll' | 'pollopt';
 
 //Interface for the types used for the API values
 export interface HnItem {
-    //Required fields
+  
   id: number;
   by?: string;         
   time?: number;        
@@ -17,7 +17,7 @@ export interface HnItem {
   type?: HnItemType;    
 
 
-  //Optional fields
+  
   deleted?: boolean;
   dead?: boolean;
   text?: string;              
@@ -25,4 +25,12 @@ export interface HnItem {
   poll?: number;              
   kids?: number[];            
   parts?: number[]; 
+}
+
+export interface HnUser {
+  id: string;      
+  created: number;  
+  karma: number;
+  about?: string;
+  submitted?: number[];
 }

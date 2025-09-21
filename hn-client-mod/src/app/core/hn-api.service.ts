@@ -3,7 +3,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { HnItem } from './hn.models';
+import { HnItem, HnUser } from './hn.models';
 import { share, shareReplay } from 'rxjs/operators';
 
 const BASE = 'https://hacker-news.firebaseio.com/v0';
@@ -47,6 +47,10 @@ export class HnApiService {
     return this.http
     .get<number[]>(`${BASE}/jobstories.json`)
     .pipe(shareReplay(1))
+  }
+
+  getUsers(username: string): Observable<HnUser>{
+     return this.http.get<HnUser>(`${BASE}/user/${username}.json`);
   }
 
   getItem(id: number): Observable<HnItem> {

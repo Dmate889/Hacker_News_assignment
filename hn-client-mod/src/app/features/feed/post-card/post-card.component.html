@@ -5,7 +5,7 @@
     </a>
   </h3>
   <p class="meta">
-    by {{ item.by || 'unknown' }}
+    by <a [routerLink]="['/user', item.by]">{{ item.by }}</a>
     • {{ item.score ?? 0 }} points
     • {{ item.descendants ?? 0 }} comments
   </p>
