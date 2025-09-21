@@ -27,15 +27,18 @@ export class HnFeedService {
   items(): HnItem[] {
     const start = this.pageIndex * PAGE_SIZE;
     const end = start + PAGE_SIZE;
+    function isRenderable(i: any): i is HnItem{
+      return (!!i && i.type === 'story' || i.type === 'job')
+    }
     return this.ids
       .slice(start, end)
       .map((id) => this.cache.get(id))
-      .filter((i): i is HnItem => !!i && i.type === 'story');
+      .filter(isRenderable);
   }
 
   async init(kind: FeedKind): Promise<void> {
   this.reset();
-  this.kind = this.kind;
+  this.kind = kind;
   try {
     let ids$: Observable<number[]>;
 
@@ -54,6 +57,9 @@ export class HnFeedService {
         break;
       case 'show':
         ids$ = this.HnApiService.getShowIds();
+        break;
+      case 'jobs':
+        ids$ = this.HnApiService.getJobs();
         break;
       default:
         throw new Error(`Unsupported feed kind: ${kind}`);
@@ -131,6 +137,7 @@ export class HnFeedService {
   get hasPrev(): boolean {
     return this.pageIndex > 0;
   }
+
 
   reset() {
     this.pageIndex = 0;

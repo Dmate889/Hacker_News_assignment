@@ -43,6 +43,12 @@ export class HnApiService {
       .pipe(shareReplay(1));
   }
 
+  getJobs():Observable<number[]> {
+    return this.http
+    .get<number[]>(`${BASE}/jobstories.json`)
+    .pipe(shareReplay(1))
+  }
+
   getItem(id: number): Observable<HnItem> {
     return this.http.get<HnItem>(`${BASE}/item/${id}.json`);
   }
