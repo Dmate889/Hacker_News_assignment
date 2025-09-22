@@ -28,7 +28,7 @@ export class HnFeedService {
     const start = this.pageIndex * PAGE_SIZE;
     const end = start + PAGE_SIZE;
     function isRenderable(i: any): i is HnItem{
-      return (!!i && i.type === 'story' || i.type === 'job')
+      return !!i && (i.type === 'story' || i.type === 'job')
     }
     return this.ids
       .slice(start, end)
