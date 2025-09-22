@@ -140,6 +140,7 @@ export class HnFeedService {
 
 
   reset() {
+    this.ids = [];
     this.pageIndex = 0;
     this.cache.clear();
     this.state = 'idle';
