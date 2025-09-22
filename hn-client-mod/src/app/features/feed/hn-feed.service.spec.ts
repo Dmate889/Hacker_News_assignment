@@ -23,6 +23,7 @@ describe('HnFeedService (init() simple test)', () => {
     service = TestBed.inject(HnFeedService);
   });
 
+
   //init() function test
   it('init(top) should load first page of items and set state correctly', async () => {
     const ids = [1, 2, 3];
@@ -67,9 +68,7 @@ describe('HnFeedService (init() simple test)', () => {
   }
 
   it('nextPage() should move to page 2 and set flags', async () => {
-    const ids = Array.from({ length: 35 }, (_, i) => i + 1);
-    api.getTopIds.and.returnValue(of(ids));
-    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+    setupFeed(35)
 
     await service.init('top');
     await service.nextPage();
@@ -85,9 +84,7 @@ describe('HnFeedService (init() simple test)', () => {
   });
 
   it('prevPage() should move back to page 1 and set flags', async () => {
-    const ids = Array.from({ length: 35 }, (_, i) => i + 1);
-    api.getTopIds.and.returnValue(of(ids));
-    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+    setupFeed(35)
 
     await service.init('top');
     await service.nextPage();
@@ -121,9 +118,7 @@ describe('HnFeedService (init() simple test)', () => {
   //loadPage() test
   //Loading 5 items
   it('loadPage(1) should load IDs 21..25 and set the ready state', async () => {
-    const ids = Array.from({ length: 25 }, (_, i) => i + 1);
-    api.getTopIds.and.returnValue(of(ids));
-    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+    setupFeed(25)
 
     await service.init('top');
     await service.loadPage(1);
@@ -139,9 +134,7 @@ describe('HnFeedService (init() simple test)', () => {
 
   // //Using the cache for loading and not another HTTP call
   it('loadPage(1) uses cache: second call to same page should not call getItem again', async () => {
-    const ids = Array.from({ length: 25 }, (_, i) => i + 1);
-    api.getTopIds.and.returnValue(of(ids));
-    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+   setupFeed(25)
 
     await service.init('top');
     api.getItem.calls.reset();
@@ -180,9 +173,17 @@ describe('HnFeedService (init() simple test)', () => {
       return of(mkItem(id));
     });
 
-    await service.init('top'); 
+    await service.init('top');
     const items = service.items();
-    expect(items.map((i) => i.id)).toEqual([1, 3]); 
+    expect(items.map((i) => i.id)).toEqual([1, 3]);
     expect(service.state).toBe('ready');
   });
+
+  
+  function setupFeed(idsCount: number) {
+    const ids = Array.from({ length: idsCount }, (_, i) => i + 1);
+    api.getTopIds.and.returnValue(of(ids));
+    api.getItem.and.callFake((id: number) => of(mkItem(id)));
+    return ids;
+  }
 });
