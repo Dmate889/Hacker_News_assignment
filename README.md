@@ -1,27 +1,59 @@
-# HnClientMod
+#Hacker News Client (Angular)
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.21.
+A minimal, responsive Hacker News client built with Angular. Supports multiple feeds, user detail page, and a clean grid-based UI. Data is retrieved in real-time from the [official Hacker News API](https://github.com/HackerNews/API).  Includes CI with GitHub Actions and automatic deployment to GitHub Pages.
 
-## Development server
+#Live Demo
+https://dmate889.github.io/Hacker_News_assignment/
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+##Features
+- Browse Hacker News feeds: Top, New, Best, Ask, Show, Jobs
+- Pagination with Prev / Next controls (buttons are shown only when available)
+- Post cards with title, author, points, and comments
+- User details: username, karma, account creation date
+- Fully responsive layout (using CSS grid)
+- GitHub Actions workflow for:
+  - Unit tests (Karma + Jasmine, headless Chrome)
+  - Deploying the build to GitHub Pages
 
-## Code scaffolding
+##Tech Stack
+- ANgular 18.2.21
+- RxJS for async data handling
+- Karma + Jasmine for testing
+- Github Actions for CI/CD
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+##Project Structure
+src/app
+├── core/         # API services & models
+├── features/     # Feed list, post cards
+├── shared/       # Shared components
+├── user/         # User detail page
+├── app.module.ts
+└── app.component.ts
 
-## Build
+##Getting started
+Clone repo and install dependencies:
+```
+git clone https://github.com/Dmate889/Hacker_News_assignment.git
+cd Hacker_News_assignment
+npm install
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run the development server:
+ ```ng serve```
 
-## Running unit tests
+Navigate to http://localhost:4200
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run Unit tests:
+```ng serve```
 
-## Running end-to-end tests
+Build for production:
+```ng build --configuration production --base-href "/Hacker_News_assignment/"```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+##Future Improvements:
+- Add comment view for stories
+- More user profile details
+- Search bar implementation
+- Dark mode toggle
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+  
