@@ -22,6 +22,8 @@ https://dmate889.github.io/Hacker_News_assignment/
 - Github Actions for CI/CD
 
 ## Project Structure
+
+```text
 src/app
 ├── core/         # API services & models
 ├── features/     # Feed list, post cards
@@ -29,6 +31,7 @@ src/app
 ├── user/         # User detail page
 ├── app.module.ts
 └── app.component.ts
+```
 
 ##Getting started
 Clone repo and install dependencies:
