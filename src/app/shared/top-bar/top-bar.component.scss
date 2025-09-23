@@ -1,0 +1,29 @@
+header.topbar {
+  background: #ff6600;        
+  padding: 0.75rem 1rem;
+}
+
+header.topbar nav {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); 
+  gap: 1rem;
+  text-align: center;
+}
+
+header.topbar nav a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.5rem 0;
+  transition: background-color 0.2s, color 0.2s;
+  border-radius: 4px;
+}
+
+header.topbar nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+header.topbar nav a.active {
+  background: #fff;
+  color: #ff6600;
+}

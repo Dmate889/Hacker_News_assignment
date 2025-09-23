@@ -1,28 +1,26 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BehaviorSubject } from 'rxjs';
+
 import { FeedComponent } from './feed.component';
 import { HnFeedService } from '../hn-feed.service';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { HnItem } from '../../../core/hn.models';
 
 describe('FeedComponent (simple)', () => {
   let fixture: ComponentFixture<FeedComponent>;
   let component: FeedComponent;
-
-  
-  const data$ = new BehaviorSubject<{ feed: string }>({ feed: 'top' });
-
   let feedSvc: jasmine.SpyObj<HnFeedService>;
+
+  const data$ = new BehaviorSubject<{ feed: string }>({ feed: 'top' });
 
   beforeEach(async () => {
     feedSvc = jasmine.createSpyObj<HnFeedService>('HnFeedService', [
       'init',
-      'nextPage',
-      'prevPage',
-      'items'
+      'items',
     ]);
+
     feedSvc.items.and.returnValue([
       { id: 1, type: 'story', title: 'A', by: 'alice' } as HnItem,
       { id: 2, type: 'story', title: 'B', by: 'bob' } as HnItem,
@@ -33,7 +31,13 @@ describe('FeedComponent (simple)', () => {
       declarations: [FeedComponent],
       providers: [
         { provide: HnFeedService, useValue: feedSvc },
-        { provide: ActivatedRoute, useValue: { data: data$.asObservable(), snapshot: { data: { feed: 'top' } } } },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            data: data$.asObservable(),
+            snapshot: { data: { feed: 'top' } },
+          },
+        },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
@@ -41,34 +45,27 @@ describe('FeedComponent (simple)', () => {
     fixture = TestBed.createComponent(FeedComponent);
     component = fixture.componentInstance;
   });
-  
-  
-  it('ngOnInit(): will read route feed and call init()', () => {
-    fixture.detectChanges();
+
+  it('ngOnInit(): reads route kind and calls feed.init(kind)', async () => {
+    await component.ngOnInit();
     expect(component.kind).toBe('top' as any);
     expect(feedSvc.init).toHaveBeenCalledOnceWith('top' as any);
   });
 
-  it('loadNext(): delegate to service nextPage()', () => {
-    fixture.detectChanges();
-    component.loadNext();
-    expect(feedSvc.nextPage).toHaveBeenCalled();
+  it('retry(): re-calls feed.init() with current kind', () => {
+    component['kind'] = 'best' as any;
+    component.retry();
+    expect(feedSvc.init).toHaveBeenCalledWith('best' as any);
   });
 
-  it('loadPrev(): delegate to service prevPage()', () => {
-    fixture.detectChanges();
-    component.loadPrev();
-    expect(feedSvc.prevPage).toHaveBeenCalled();
-  });
-
-  it('itemLink(): without the URL we get HN fallback', () => {
+  it('itemLink(): falls back to HN item page when url is missing', () => {
     const a = component.itemLink({ id: 5, url: 'https://x.y' } as HnItem);
     const b = component.itemLink({ id: 6 } as HnItem);
     expect(a).toBe('https://x.y');
     expect(b).toBe('https://news.ycombinator.com/item?id=6');
   });
 
-  it('trackById(): we get the item ID back', () => {
+  it('trackById(): returns the item id', () => {
     expect(component.trackById(0, { id: 123 } as any)).toBe(123);
   });
 });

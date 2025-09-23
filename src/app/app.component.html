@@ -1,2 +1,30 @@
-<app-top-bar></app-top-bar>
-<router-outlet></router-outlet>
+<header class="topbar">
+  <app-top-bar></app-top-bar>
+</header>
+
+<main class="app-main">
+    <div class="feed-box">
+        <router-outlet></router-outlet>
+  </div>
+
+    <div class="controls">
+    <button (click)="loadPrev()" [disabled]="!feed.hasPrev || feed.state==='loading'">
+      Prev
+    </button>
+    <button (click)="loadNext()" [disabled]="!feed.hasNext || feed.state==='loading'">
+      Next
+    </button>
+  </div>
+  
+</main>
+
+<footer class="app-footer">
+  <nav class="footer-links">
+    <a href="https://news.ycombinator.com/newsguidelines.html" target="_blank" rel="noopener">Guidelines</a>
+    <a href="https://news.ycombinator.com/newsfaq.html" target="_blank" rel="noopener">FAQ</a>
+    <a href="https://news.ycombinator.com/lists" target="_blank" rel="noopener">Lists</a>
+    <a href="https://news.ycombinator.com/security.html" target="_blank" rel="noopener">Security</a>
+    <a href="https://www.ycombinator.com/apply/" target="_blank" rel="noopener">Apply to YC</a>
+    <a href="mailto:hn@ycombinator.com" target="_blank" rel="noopener">Contact</a>
+  </nav>
+</footer>

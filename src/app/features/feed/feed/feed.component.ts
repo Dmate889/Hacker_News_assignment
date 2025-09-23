@@ -21,13 +21,13 @@ export class FeedComponent implements OnInit {
     await this.feed.init(this.kind); // loads first page automatically
   }
 
-  async loadNext(): Promise<void> {
-    await this.feed.nextPage();
-  }
+  // async loadNext(): Promise<void> {
+  //   await this.feed.nextPage();
+  // }
 
-  async loadPrev(): Promise<void> {
-    await this.feed.prevPage();
-  }
+  // async loadPrev(): Promise<void> {
+  //   await this.feed.prevPage();
+  // }
 
   retry(): void {
     this.feed.init(this.kind);

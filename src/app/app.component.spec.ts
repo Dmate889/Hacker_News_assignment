@@ -1,37 +1,54 @@
-import { TestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
-import { AppComponent } from './app.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { AppComponent } from './app.component';
+import { HnFeedService } from '@features/feed/hn-feed.service';
+import { provideRouter } from '@angular/router';
 
+describe('AppComponent (pager functionality only)', () => {
+  let fixture: ComponentFixture<AppComponent>;
+  let feedSvc: jasmine.SpyObj<HnFeedService>;
 
-describe('AppComponent', () => {
   beforeEach(async () => {
+    feedSvc = jasmine.createSpyObj<HnFeedService>('HnFeedService', [
+      'nextPage',
+      'prevPage',
+    ]);
+    feedSvc.nextPage.and.returnValue(Promise.resolve());
+    feedSvc.prevPage.and.returnValue(Promise.resolve());
+
+    (feedSvc as any).hasNext = true;
+    (feedSvc as any).hasPrev = true;
+    (feedSvc as any).state = 'ready';
+
     await TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([])
-      ],
-      declarations: [
-        AppComponent
+      declarations: [AppComponent],
+      providers: [
+        { provide: HnFeedService, useValue: feedSvc },
+        provideRouter([]),
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-  });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it(`should have as title 'hn-client-mod'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('hn-client-mod');
-  });
-
-  it('should render the top bar', () => {
-    const fixture = TestBed.createComponent(AppComponent);
+    fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('app-top-bar')).not.toBeNull();
+  });
+
+  function getPrevNext() {
+    const el: HTMLElement = fixture.nativeElement;
+    const btns = el.querySelectorAll<HTMLButtonElement>('.controls button');
+    const [prevBtn, nextBtn] = Array.from(btns);
+    return { prevBtn, nextBtn };
+  }
+
+  it('clicking Prev calls feed.prevPage()', () => {
+    const { prevBtn } = getPrevNext();
+    prevBtn.click();
+    expect(feedSvc.prevPage).toHaveBeenCalledTimes(1);
+  });
+
+  it('clicking Next calls feed.nextPage()', () => {
+    const { nextBtn } = getPrevNext();
+    nextBtn.click();
+    expect(feedSvc.nextPage).toHaveBeenCalledTimes(1);
   });
 });

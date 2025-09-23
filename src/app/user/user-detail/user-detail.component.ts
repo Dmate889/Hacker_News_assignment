@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HnApiService } from '@core/hn-api.service';
-import { HnUser } from '@core/hn.models';
+import { HnItem, HnUser } from '@core/hn.models';
 
 @Component({
   selector: 'app-user-detail',
@@ -17,6 +17,7 @@ export class UserDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const username = this.route.snapshot.paramMap.get('id')!;
+
     this.HnApiService.getUser(username).subscribe({
       next: u => {
         this.user = u;

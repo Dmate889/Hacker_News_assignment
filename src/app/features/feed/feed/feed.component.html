@@ -12,13 +12,4 @@
     <app-post-card [item]="item"></app-post-card>
   </li>
 </ul>
-
-  <div class="controls">
-    <button (click)="loadPrev()" [disabled]="!feed.hasPrev || feed.state==='loading'">
-      Prev
-    </button>
-    <button (click)="loadNext()" [disabled]="!feed.hasNext || feed.state==='loading'">
-      Next
-    </button>
-  </div>
 </section>
