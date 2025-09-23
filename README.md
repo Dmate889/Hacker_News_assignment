@@ -1,11 +1,11 @@
-#Hacker News Client (Angular)
+# Hacker News Client (Angular)
 
 A minimal, responsive Hacker News client built with Angular. Supports multiple feeds, user detail page, and a clean grid-based UI. Data is retrieved in real-time from the [official Hacker News API](https://github.com/HackerNews/API).  Includes CI with GitHub Actions and automatic deployment to GitHub Pages.
 
-#Live Demo
+## Live Demo
 https://dmate889.github.io/Hacker_News_assignment/
 
-##Features
+## Features
 - Browse Hacker News feeds: Top, New, Best, Ask, Show, Jobs
 - Pagination with Prev / Next controls (buttons are shown only when available)
 - Post cards with title, author, points, and comments
@@ -15,13 +15,13 @@ https://dmate889.github.io/Hacker_News_assignment/
   - Unit tests (Karma + Jasmine, headless Chrome)
   - Deploying the build to GitHub Pages
 
-##Tech Stack
+## Tech Stack
 - ANgular 18.2.21
 - RxJS for async data handling
 - Karma + Jasmine for testing
 - Github Actions for CI/CD
 
-##Project Structure
+## Project Structure
 src/app
 ├── core/         # API services & models
 ├── features/     # Feed list, post cards
@@ -49,7 +49,7 @@ Run Unit tests:
 Build for production:
 ```ng build --configuration production --base-href "/Hacker_News_assignment/"```
 
-##Future Improvements:
+## Future Improvements:
 - Add comment view for stories
 - More user profile details
 - Search bar implementation
