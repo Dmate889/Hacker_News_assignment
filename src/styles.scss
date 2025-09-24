@@ -21,6 +21,7 @@ main.app-main {
   display: grid;
   place-items: center;   
   padding: 1rem;
+  overflow: auto;
 }
 
 .feed-box {
@@ -80,7 +81,7 @@ header.topbar { grid-area: nav; }
 main.app-main  { grid-area: main; }
 footer.app-footer { grid-area: footer; }
 
-header.topbar { display: grid; align-items: center; background: #ff6600; padding: 1rem; }
+header.topbar { display: grid; align-items: center; background: #ff6600; padding: 1rem; position: sticky; top: 0; }
 footer.app-footer { display: grid; place-items: center; background: #eee; padding: 1rem; }
 
 
