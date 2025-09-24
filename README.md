@@ -7,7 +7,7 @@ https://dmate889.github.io/Hacker_News_assignment/
 
 ## Features
 - Browse Hacker News feeds: Top, New, Best, Ask, Show, Jobs
-- Pagination with Prev / Next controls (buttons are shown only when available)
+- Pagination with Prev / Next controls (buttons are always visible but disabled when not available)
 - Post cards with title, author, points, and comments
 - User details: username, karma, account creation date
 - Fully responsive layout (using CSS grid)
@@ -33,7 +33,12 @@ src/app
 └── app.component.ts
 ```
 
-##Getting started
+## Getting started
+### Requirements
+- Node.js v18 or higher
+- npm (comes bundled with Node.js)
+- Angular CLI required to run ng serve / ng test - ```npm install -g @angular/cli```
+
 Clone repo and install dependencies:
 ```
 git clone https://github.com/Dmate889/Hacker_News_assignment.git
