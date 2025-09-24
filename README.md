@@ -37,7 +37,8 @@ src/app
 ### Requirements
 - Node.js v18 or higher
 - npm (comes bundled with Node.js)
-- Angular CLI required to run ng serve / ng test - ```npm install -g @angular/cli```
+- Angular CLI required to run ng serve / ng test
+- - ```npm install -g @angular/cli```
 
 Clone repo and install dependencies:
 ```
@@ -52,7 +53,7 @@ Run the development server:
 Navigate to http://localhost:4200
 
 Run Unit tests:
-```ng serve```
+```ng test```
 
 Build for production:
 ```ng build --configuration production --base-href "/Hacker_News_assignment/"```
